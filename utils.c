@@ -1,4 +1,10 @@
 #include "renderer.h"
+float reluf(float a) {
+	if (a > 0)
+		return a;
+	else
+		return 0;
+}
 void pr(float l) {
 	int level = (int)(l * 10);
 	printf("%c", " .,-=!*#$@"[level]);
@@ -8,10 +14,10 @@ void ControlFPS(clock_t* previousTime) {
 	clock_t waitTime = TIME_SLICE - drawTime;
 	//printf("\n\n\n\n\n\n\n\n\n\n%d", drawTime);
 	if (waitTime <= 0) {
-		printf("\n________________\n\n\x1B[1;37;41m  TOO BUSY  \x1B[0m\n________________");
+		printf("\n____________\n\x1B[1;37;41m  TOO BUSY  \x1B[0m");
 	}
 	else {
-		printf("\n________________\n\n\x1B[1;37;42m  RUN WELL  \x1B[0m\n________________");
+		printf("\n____________\n\x1B[1;37;42m  RUN WELL  \x1B[0m");
 		while (waitTime >= 20) {
 			Sleep(1);//but in fact it sleeps for 15 miliseconds and more!
 			drawTime = clock() - *previousTime;
@@ -67,14 +73,14 @@ Ray GenRay(const Camera* camera, float xRate, float yRate) {
 	Vector3 cameraY = Normalize(camera->up);
 	Vector3 cameraX = Normalize(Cross(cameraY, cameraZ));
 	//通过视场角计算屏幕平面大小
-	float screenHeight = camera->zNear * tan(camera->fovy / 2.0f) * 2.0f;
+	float screenHeight = camera->zNear * tanf(camera->fovy / 2.0f) * 2.0f;
 	float screenWidth = screenHeight * camera->aspect;
 	//计算射线经过点坐标
 	Vector3 screenCenter = Add(Mult(cameraZ, camera->zNear), camera->position);
 	Vector3 screenPoint = screenCenter;
 	//屏幕的上方向与相机上方向一致
-	screenPoint = Add(screenPoint, Mult(cameraX, (xRate - 0.5f) * screenWidth));
-	screenPoint = Add(screenPoint, Mult(cameraY, (yRate - 0.5f) * screenHeight));
+	screenPoint = Add(screenPoint, Mult(cameraX, (0.5f - xRate) * screenWidth));
+	screenPoint = Add(screenPoint, Mult(cameraY, (0.5f - yRate) * screenHeight));
 	Ray ray = {
 		camera->position,
 		Normalize(Sub(screenPoint, camera->position))

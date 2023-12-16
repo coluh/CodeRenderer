@@ -29,6 +29,7 @@ typedef struct RAY {
     Vector3 direction;      //Normalized
 } Ray;
 
+float reluf(float a);
 void pr(float l);
 
 Vector3 Add(Vector3 a, Vector3 b);
