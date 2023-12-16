@@ -7,7 +7,7 @@ float reluf(float a) {
 }
 void pr(float l) {
 	int level = (int)(l * 10);
-	printf("%c", " .,-=!*#$@"[level]);
+	printf("%c", " .:-=!*#$@"[level]);
 }
 void ControlFPS(clock_t* previousTime) {
 	clock_t drawTime = clock() - *previousTime;
@@ -38,7 +38,7 @@ Vector3 Sub(Vector3 a, Vector3 b)
 	Vector3 re = { a.x - b.x, a.y - b.y, a.z - b.z };
 	return re;
 }
-Vector3 Mult(Vector3 vec, float s)
+Vector3 Multi(Vector3 vec, float s)
 {
 	Vector3 re = { vec.x * s, vec.y * s, vec.z * s };
 	return re;
@@ -76,11 +76,11 @@ Ray GenRay(const Camera* camera, float xRate, float yRate) {
 	float screenHeight = camera->zNear * tanf(camera->fovy / 2.0f) * 2.0f;
 	float screenWidth = screenHeight * camera->aspect;
 	//计算射线经过点坐标
-	Vector3 screenCenter = Add(Mult(cameraZ, camera->zNear), camera->position);
+	Vector3 screenCenter = Add(Multi(cameraZ, camera->zNear), camera->position);
 	Vector3 screenPoint = screenCenter;
 	//屏幕的上方向与相机上方向一致
-	screenPoint = Add(screenPoint, Mult(cameraX, (0.5f - xRate) * screenWidth));
-	screenPoint = Add(screenPoint, Mult(cameraY, (0.5f - yRate) * screenHeight));
+	screenPoint = Add(screenPoint, Multi(cameraX, (0.5f - xRate) * screenWidth/2));	//  delete the '/2' when
+	screenPoint = Add(screenPoint, Multi(cameraY, (0.5f - yRate) * screenHeight));	//drawing into a picture
 	Ray ray = {
 		camera->position,
 		Normalize(Sub(screenPoint, camera->position))
@@ -112,7 +112,7 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
 		}
 		else
 		{
-			*outHitPosition = Add(ray.origin, Mult(ray.direction, t));
+			*outHitPosition = Add(ray.origin, Multi(ray.direction, t));
 			*outHitNormal = Normalize(Sub(*outHitPosition, ballCenter));
 			return true;
 		}
