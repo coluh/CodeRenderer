@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 	int height = 20;
 	int width = 50*2;
 	Camera camera = {
-		{7, 0, 0},
+		{7, 0, 1},
 		{0, 0, 0},
 		{0, 0, 1},
 		PI / 2.0f,
@@ -16,14 +16,13 @@ int main(int argc, char* argv[]) {
 		0.5f,
 		FIRST_PERSON
 	};
-	Vector3 sunPos = { 10, 0, 5 };
-	float theta = 0;
-	Vector3 ballCenter = { 0, 0, 0 };
-	float ballRadius = 3.0f;
+	Vector3 sunPos = { 7, 0, 5 };
+	//FILE* fp = fopen("data.blocks", "w");
+	Block stone = { 1,3,0,0b10100000u };
 	while (true) {
-		printf("\x1B[1;1H\x1B[1;32;40m");
-		sunPos.x = 10 * cosf(theta);
-		sunPos.y = 10 * sinf(theta);
+		printf("\x1B[1;1H");
+		printf("Pos: ( %.1f, %.1f, %.1f )\n\x1B[1;32;40m", camera.position.x, camera.position.y, camera.position.z);
+		// Block stone
 		for (int row = 0; row < height; ++row) {
 			for (int col = 0; col < width; ++col) {
 				float xRate = col / (float)width;
@@ -31,21 +30,19 @@ int main(int argc, char* argv[]) {
 				Ray ray = GenRay(&camera, xRate, yRate);
 				Vector3 interPosition;
 				Vector3 interNormal;
-				bool hitted = RayHitBall(ray, ballCenter, ballRadius, &interPosition, &interNormal);
-				if (hitted) {
-					float diffuse = reluf(Dot(Normalize(Sub(sunPos, interPosition)), interNormal));
-					pr(diffuse);
+				if (RayHitBlock(ray, stone, &interPosition, &interNormal)) {
+					float diff = reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
+					pr(diff);
 				}
-				else
-				{
+				else {
 					printf(" ");
 				}
 			}
 			printf("\n");
 		}
-		theta += 0.1f;
 		CameraMove(&camera, &previousMousePos, 400);
 		ControlFPS(&previousTime);
 	}
+	//fclose(fp);
 	return 0;
 }

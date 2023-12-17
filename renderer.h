@@ -8,6 +8,7 @@
 #ifndef PI
     #define PI 3.14159265358979f
 #endif
+#define RENDERING_DISTANCE 10
 #define TIME_SLICE (1000/12)
 typedef struct VECTOR3 {
 	float x;
@@ -15,6 +16,9 @@ typedef struct VECTOR3 {
 	float z;
 } Vector3;
 typedef Vector3 Vector;
+enum CAMERA_MODE {
+    FIRST_PERSON, THIRD_PERSON
+};
 typedef struct CAMERA {
     Vector3 position;       //相机位置
     Vector3 target;         //目标位置
@@ -28,12 +32,16 @@ typedef struct RAY {
     Vector3 origin;
     Vector3 direction;      //Normalized
 } Ray;
-enum CAMERA_MODE {
-    FIRST_PERSON, THIRD_PERSON
-};
+typedef struct BLOCK {
+    UINT8 x;
+    UINT8 y;
+    UINT8 z;
+    UINT8 information;
+} Block;
 void ControlFPS(clock_t*);
-//Print
+//make negitive value to zero
 float reluf(float a);
+//get a float between 0 and 1 and print char
 void pr(float l);
 //Vector
 Vector3 Add(Vector3 a, Vector3 b);
@@ -47,4 +55,5 @@ float Dot(Vector3 a, Vector3 b);
 Ray GenRay(const Camera*, float, float);
 //Camera
 void CameraMove(Camera*, POINT*, int);
-bool RayHitBall(Ray, Vector3, float, Vector3*, Vector3*);
+bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal);
+bool RayHitBlock(Ray ray, Block block, Vector3* outHitPos, Vector3* outHitNormal);

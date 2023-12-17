@@ -120,3 +120,8 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
 
 	return false;
 }
+
+bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNormal){
+	//检测射线是否射到Block, 已知block西北下角的坐标
+	return false;
+}
