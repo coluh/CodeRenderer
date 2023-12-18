@@ -8,8 +8,17 @@
 #ifndef PI
     #define PI 3.14159265358979f
 #endif
+#define HEIGHTBYWIDTH 2
 #define RENDERING_DISTANCE 10
 #define TIME_SLICE (1000/12)
+/*
+ *  总结一下, 这些三维向量中仅表示方向的有:
+ *      camera.target
+ *      camera.up
+ *      ray.direction
+ *      inHitNormal
+ *      outHitNormal
+ */
 typedef struct VECTOR3 {
 	float x;
 	float y;

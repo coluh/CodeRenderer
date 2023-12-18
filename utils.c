@@ -7,7 +7,7 @@ float reluf(float a) {
 }
 void pr(float l) {
 	int level = (int)(l * 10);
-	printf("%c", " .:-=!*#$@"[level]);
+	printf("%c", " .:-=*0#$@"[level]);
 }
 void ControlFPS(clock_t* previousTime) {
 	clock_t drawTime = clock() - *previousTime;
@@ -69,7 +69,7 @@ float Dot(Vector3 a, Vector3 b)
 //Ray
 Ray GenRay(const Camera* camera, float xRate, float yRate) {
 	//相机坐标系
-	Vector3 cameraZ = Normalize(Sub(camera->target, camera->position));
+	Vector3 cameraZ = Normalize(camera->target);
 	Vector3 cameraY = Normalize(camera->up);
 	Vector3 cameraX = Normalize(Cross(cameraY, cameraZ));
 	//通过视场角计算屏幕平面大小
@@ -79,8 +79,8 @@ Ray GenRay(const Camera* camera, float xRate, float yRate) {
 	Vector3 screenCenter = Add(Multi(cameraZ, camera->zNear), camera->position);
 	Vector3 screenPoint = screenCenter;
 	//屏幕的上方向与相机上方向一致
-	screenPoint = Add(screenPoint, Multi(cameraX, (0.5f - xRate) * screenWidth/2));	//  delete the '/2' when
-	screenPoint = Add(screenPoint, Multi(cameraY, (0.5f - yRate) * screenHeight));	//drawing into a picture
+	screenPoint = Add(screenPoint, Multi(cameraX, (0.5f - xRate) * screenWidth / HEIGHTBYWIDTH));	//  delete the '/2' when
+	screenPoint = Add(screenPoint, Multi(cameraY, (0.5f - yRate) * screenHeight));					//drawing into a picture
 	Ray ray = {
 		camera->position,
 		Normalize(Sub(screenPoint, camera->position))
@@ -88,7 +88,7 @@ Ray GenRay(const Camera* camera, float xRate, float yRate) {
 	return ray;
 }
 //ball
-bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal){
+bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal) {
 	//解方程  |S + tR - O|     = radius
 	//即 	  (S + tR  - O)^2  = radius^2
 	//即(S + tR -O)(S + tR -O) = radius^2
@@ -120,8 +120,51 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
 
 	return false;
 }
-
-bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNormal){
-	//检测射线是否射到Block, 已知block西北下角的坐标
+/*
+ *	检测射线是否射到Block, 已知block西北下角的坐标
+ *	对于其中一个面, 算出面中点坐标和法向量
+ *		计算射线与平面交点位置, 与面中点比较
+ *			若x坐标或y坐标差大于0.5, continue
+ *			否则, 若此次射线延伸的比例更短, 更新位置和法向量
+ */
+bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
+	Vector3 origin = { (float)blockPos.x,(float)blockPos.y,(float)blockPos.z };
+	Ray normal[6] = {{
+		Add(origin, (Vector3) { 0, 0.5, 0.5 }), {-1, 0, 0}
+	}, {
+		Add(origin, (Vector3) { 0.5, 0, 0.5 }), {0, -1, 0}
+	}, {
+		Add(origin, (Vector3) { 0.5, 0.5, 0 }), {0, 0, -1}
+	}, {
+		Add(origin, (Vector3) { 1, 0.5, 0.5 }), {1, 0, 0}
+	}, {
+		Add(origin, (Vector3) { 0.5, 1, 0.5 }), {0, 1, 0}
+	}, {
+		Add(origin, (Vector3) { 0.5, 0.5, 1 }), {0, 0, 1}
+	}};
+	bool isFound = false;
+	float t_last = RENDERING_DISTANCE * 100.0f;
+	for (int i = 0; i < 6; i++) {
+		//normal[i].direction
+		float t = Dot(Sub(normal[i].origin, ray.origin), normal[i].direction);
+		t /= Dot(ray.direction, normal[i].direction);
+		if (t <= 0)
+			continue;
+		Vector3 hitPos = Add(ray.origin, Multi(ray.direction, t));
+		if (normal[i].direction.x == 0 && fabsf(hitPos.x - normal[i].origin.x) >= 0.5)
+			continue;
+		if (normal[i].direction.y == 0 && fabsf(hitPos.y - normal[i].origin.y) >= 0.5)
+			continue;
+		if (normal[i].direction.z == 0 && fabsf(hitPos.z - normal[i].origin.z) >= 0.5)
+			continue;
+		if (isFound == false || (isFound == true && t < t_last)) {
+			*outHitPos = hitPos;
+			*outHitNormal = normal[i].direction;
+			isFound = true;
+			t_last = t;
+		}
+	}
+	if (isFound == true)
+		return true;
 	return false;
 }

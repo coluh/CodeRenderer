@@ -6,9 +6,14 @@ int main(int argc, char* argv[]) {
 	previousTime = clock();
 	POINT previousMousePos = { 0 };
 	int height = 20;
-	int width = 50*2;
+	int width = 50 * HEIGHTBYWIDTH;
+	/*printf("QWERTYUIOP");
+	getchar();
+	getchar();
+	height *= 4;
+	width *= 4;*/
 	Camera camera = {
-		{7, 0, 1},
+		{3, 1, 1},
 		{0, 0, 0},
 		{0, 0, 1},
 		PI / 2.0f,
@@ -16,20 +21,25 @@ int main(int argc, char* argv[]) {
 		0.5f,
 		FIRST_PERSON
 	};
-	Vector3 sunPos = { 7, 0, 5 };
+	camera.target = Normalize(Sub(camera.target, camera.position));
+	Vector3 sunPos = { 7, 2, 5 };
 	//FILE* fp = fopen("data.blocks", "w");
-	Block stone = { 1,3,0,0b10100000u };
+	Block stone = { 0,0,0,0b10100000u };
 	while (true) {
 		printf("\x1B[1;1H");
-		printf("Pos: ( %.1f, %.1f, %.1f )\n\x1B[1;32;40m", camera.position.x, camera.position.y, camera.position.z);
+		printf("Pos: ( %+.1f, %+.1f, %+.1f )", camera.position.x, camera.position.y, camera.position.z);
+		printf("\x1B[1;35;47m\tFacing:(%+.2f,%+.2f,%+.2f)\tUp:(%+.2f,%+.2f,%+.2f)\tDegree:%+.2f", \
+			camera.target.x, camera.target.y, camera.target.z, \
+			camera.up.x, camera.up.y, camera.up.z, Dot(camera.target, camera.up));
+		printf("\n\x1B[1;32;40m");
 		// Block stone
 		for (int row = 0; row < height; ++row) {
 			for (int col = 0; col < width; ++col) {
 				float xRate = col / (float)width;
 				float yRate = row / (float)height;
 				Ray ray = GenRay(&camera, xRate, yRate);
-				Vector3 interPosition;
-				Vector3 interNormal;
+				Vector3 interPosition;	//要分清楚坐标和用坐标表示的方向啊!!
+				Vector3 interNormal;	//噫嘘唏!!	这个是方向, 不是坐标也!!
 				if (RayHitBlock(ray, stone, &interPosition, &interNormal)) {
 					float diff = reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
 					pr(diff);
