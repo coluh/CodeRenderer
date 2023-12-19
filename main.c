@@ -1,12 +1,13 @@
 ﻿#include "renderer.h"
 
 int main(int argc, char* argv[]) {
-	printf("\033[?25l");
+	printf("\033[?25l");	//hide curser
 	clock_t previousTime;
 	previousTime = clock();
 	POINT previousMousePos = { 0 };
 	int height = 20;
-	int width = 50 * HEIGHTBYWIDTH;
+	int width = 20 * 2 * HEIGHTBYWIDTH;
+	PrepareScreen(&width, &height);
 	/*printf("QWERTYUIOP");
 	getchar();
 	getchar();

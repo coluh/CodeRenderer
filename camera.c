@@ -1,4 +1,67 @@
 #include "renderer.h"
+void PrepareScreen(int* w, int* h) {
+	printf("   80 * 20\n  120 * 30\n  160 * 40\n  200 * 50\n\n\x1B[1;37;42m");
+	char ch;
+	int height = *h;
+	do {
+		printf("\x1B[0m\x1B[1;1H\x1B[2J");
+		printf("\x1B[1;33;40mPlease zoom the font to a suitable size. j and k to choose. SPACE to confirm.\n");
+		printf("\x1B[1;37;42m");//change to green
+		switch (height) {
+		case 20:
+			for (int i = 0; i < 80; i++)printf("*");
+			//\x1B[1;35;40m
+			printf("\n*\x1B[1;35;46m\t   80 * 20  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  120 * 30  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  160 * 40  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  200 * 50  \x1B[1;37;42m");
+			for (int i = 1; i < 16; i++)printf("\n*");
+			break;
+		case 30:
+			for (int i = 0; i < 120; i++)printf("*");
+			printf("\n*\x1B[1;35;40m\t   80 * 20  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;46m\t  120 * 30  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  160 * 40  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  200 * 50  \x1B[1;37;42m");
+			for (int i = 1; i < 26; i++)printf("\n*");
+			break;
+		case 40:
+			for (int i = 0; i < 160; i++)printf("*");
+			printf("\n*\x1B[1;35;40m\t   80 * 20  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  120 * 30  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;46m\t  160 * 40  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  200 * 50  \x1B[1;37;42m");
+			for (int i = 1; i < 36; i++)printf("\n*");
+			break;
+		case 50:
+			for (int i = 0; i < 200; i++)printf("*");
+			printf("\n*\x1B[1;35;40m\t   80 * 20  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  120 * 30  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;40m\t  160 * 40  \x1B[1;37;42m");
+			printf("\n*\x1B[1;35;46m\t  200 * 50  \x1B[1;37;42m");
+			for (int i = 1; i < 46; i++)printf("\n*");
+			break;
+		}
+		ch = _getch();
+		switch (ch) {
+		case 'j':
+		case 'J':
+			height += 10;
+			break;
+		case 'k':
+		case 'K':
+			height -= 10;
+			break;
+		default:
+			break;
+		}
+		if (height == 60)height = 20;
+		if (height == 10)height = 50;
+	} while (ch != ' ');
+	printf("\x1B[0m");
+	*h = height;
+	*w = height * 2 * HEIGHTBYWIDTH;
+}
 void CameraMove(Camera* camera, POINT* preMousePos, int mouseSensi) {
 	if (GetKeyState('W') < 0) {
 		Vector3 d = Multi(camera->target, 0.1f);
@@ -43,9 +106,18 @@ void CameraMove(Camera* camera, POINT* preMousePos, int mouseSensi) {
 		Vector3 cameraZ = Normalize(camera->target);
 		Vector3 cameraY = Normalize(camera->up);
 		Vector3 cameraX = Normalize(Cross(cameraY, cameraZ));
-		//固定y, 移动x与z轴
-		cameraZ = Normalize(Sub(Multi(cameraZ, cosf(offsetH)), Multi(cameraX, sinf(offsetH))));
-		cameraX = Normalize(Cross(cameraY, cameraZ));
+		//固定y, 移动x与z轴			* No! 这样是错的!
+		/*cameraZ = Normalize(Sub(Multi(cameraZ, cosf(offsetH)), Multi(cameraX, sinf(offsetH))));
+		cameraX = Normalize(Cross(cameraY, cameraZ));*/
+		//应当以(0,0,1)为轴转动		* 这样才对!!!
+		struct MATRIX33 rotation = {
+			{ cosf(offsetH), -sinf(offsetH), 0 },
+			{ sinf(offsetH), cosf(offsetH), 0 },
+			{ 0, 0, 1 }
+		};
+		cameraX = LinearTrans33(rotation, cameraX);
+		cameraY = LinearTrans33(rotation, cameraY);
+		cameraZ = LinearTrans33(rotation, cameraZ);
 		//固定x, 移动z与y轴
 		cameraZ = Normalize(Sub(Multi(cameraZ, cosf(offsetV)), Multi(cameraY, sinf(offsetV))));
 		cameraY = Normalize(Cross(cameraZ, cameraX));

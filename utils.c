@@ -62,6 +62,13 @@ Vector3 Cross(Vector3 a, Vector3 b)
 	};
 	return re;
 }
+Vector3 LinearTrans33(struct MATRIX33 trans, Vector3 before) {
+	Vector3 after;
+	after = Multi(trans.col_one, before.x);
+	after = Add(after, Multi(trans.col_two, before.y));
+	after = Add(after, Multi(trans.col_three, before.z));
+	return after;
+}
 float Dot(Vector3 a, Vector3 b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;

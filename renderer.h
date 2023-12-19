@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <conio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
@@ -24,6 +25,11 @@ typedef struct VECTOR3 {
 	float y;
 	float z;
 } Vector3;
+struct MATRIX33 {
+    Vector3 col_one;
+    Vector3 col_two;
+    Vector3 col_three;
+};
 typedef Vector3 Vector;
 enum CAMERA_MODE {
     FIRST_PERSON, THIRD_PERSON
@@ -47,6 +53,7 @@ typedef struct BLOCK {
     UINT8 z;
     UINT8 information;
 } Block;
+void PrepareScreen(int *w, int *h);
 void ControlFPS(clock_t*);
 //make negitive value to zero
 float reluf(float a);
@@ -60,6 +67,7 @@ float Magnitude(Vector3 vec);
 Vector3 Normalize(Vector3 vec);
 Vector3 Cross(Vector3 a, Vector3 b);
 float Dot(Vector3 a, Vector3 b);
+Vector3 LinearTrans33(struct MATRIX33 trans, Vector3 before);
 //Draw
 Ray GenRay(const Camera*, float, float);
 //Camera
