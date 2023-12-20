@@ -23,7 +23,9 @@ int main(int argc, char* argv[]) {
 		FIRST_PERSON
 	};
 	camera.target = Normalize(Sub(camera.target, camera.position));
-	Vector3 sunPos = { 7, 2, 5 };
+	AddLight(70, 40, 50, LIGHT_POINT);
+	AddLight(1, -1, 1, LIGHT_PARALLEL);
+	AddLight(-10, -10, -5, LIGHT_PARALLEL);
 	//FILE* fp = fopen("data.blocks", "w");
 	Block stone = { 0,0,0,0b10100000u };
 	while (true) {
@@ -42,7 +44,9 @@ int main(int argc, char* argv[]) {
 				Vector3 interPosition;	//要分清楚坐标和用坐标表示的方向啊!!
 				Vector3 interNormal;	//噫嘘唏!!	这个是方向, 不是坐标也!!
 				if (RayHitBlock(ray, stone, &interPosition, &interNormal)) {
-					float diff = reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
+					/*float diff = 0.5f * reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
+					diff += 0.5f * reluf(Dot(interNormal, Normalize(moonDire)));*/
+					float diff = CalculateBrightness(interPosition, interNormal);
 					pr(diff);
 				}
 				else {

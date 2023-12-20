@@ -1,4 +1,5 @@
 #include "renderer.h"
+struct LIGHT* root = NULL;
 float reluf(float a) {
 	if (a > 0)
 		return a;
@@ -6,8 +7,8 @@ float reluf(float a) {
 		return 0;
 }
 void pr(float l) {
-	int level = (int)(l * 10);
-	printf("%c", " .:-=*0#$@"[level]);
+	int level = (int)(l * 20);
+	printf("%c", " `.:;-=+~>?*0CXB#$W@"[level]);
 }
 void ControlFPS(clock_t* previousTime) {
 	clock_t drawTime = clock() - *previousTime;
@@ -136,7 +137,7 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
  */
 bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
 	Vector3 origin = { (float)blockPos.x,(float)blockPos.y,(float)blockPos.z };
-	Ray normal[6] = {{
+	Ray normal[6] = { {
 		Add(origin, (Vector3) { 0, 0.5, 0.5 }), {-1, 0, 0}
 	}, {
 		Add(origin, (Vector3) { 0.5, 0, 0.5 }), {0, -1, 0}
@@ -148,7 +149,7 @@ bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNor
 		Add(origin, (Vector3) { 0.5, 1, 0.5 }), {0, 1, 0}
 	}, {
 		Add(origin, (Vector3) { 0.5, 0.5, 1 }), {0, 0, 1}
-	}};
+	} };
 	bool isFound = false;
 	float t_last = RENDERING_DISTANCE * 100.0f;
 	for (int i = 0; i < 6; i++) {
@@ -174,4 +175,45 @@ bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNor
 	if (isFound == true)
 		return true;
 	return false;
+}
+void AddLightV(Vector3 coo, enum LIGHT_TYPE type) {
+	struct LIGHT* p = (struct LIGHT*)malloc(sizeof(struct LIGHT));
+	if (p == NULL) {
+		printf("\nGreat problem");
+		return;
+	}
+	p->coordinate = coo;
+	p->type = type;
+	p->next = NULL;
+	if (root == NULL) {
+		root = p;
+	}
+	else {
+		struct LIGHT* now = root;
+		while (now->next != NULL)now = now->next;
+		now->next = p;
+	}
+}
+void AddLight(float x, float y, float z, enum LIGHT_TYPE type) {
+	Vector3 v = {
+		x, y, z
+	};
+	AddLightV(v, type);
+}
+float CalculateBrightness(Vector3 interPosition, Vector3 interNormal) {
+
+	/*float diff = 0.5f * reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
+	diff += 0.5f * reluf(Dot(interNormal, Normalize(moonDire)));*/
+	if (root == NULL)
+		return 0;
+	struct LIGHT* now = root;
+	float diff = 0, n = 0;
+	for (; now != NULL; now = now->next) {
+		if (now->type == LIGHT_POINT)
+			diff += reluf(Dot(interNormal, Normalize(Sub(now->coordinate, interPosition))));
+		else
+			diff += reluf(Dot(interNormal, Normalize(now->coordinate)));
+		n++;
+	}
+	return diff / n;
 }

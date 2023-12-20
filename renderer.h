@@ -30,6 +30,14 @@ struct MATRIX33 {
     Vector3 col_two;
     Vector3 col_three;
 };
+enum LIGHT_TYPE {
+    LIGHT_POINT, LIGHT_PARALLEL
+};
+struct LIGHT {
+    Vector3 coordinate;
+    enum LIGHT_TYPE type;
+    struct LIGHT* next;
+};
 typedef Vector3 Vector;
 enum CAMERA_MODE {
     FIRST_PERSON, THIRD_PERSON
@@ -74,3 +82,6 @@ Ray GenRay(const Camera*, float, float);
 void CameraMove(Camera*, POINT*, int);
 bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal);
 bool RayHitBlock(Ray ray, Block block, Vector3* outHitPos, Vector3* outHitNormal);
+void AddLightV(Vector3 coo, enum LIGHT_TYPE type);
+void AddLight(float x, float y, float z, enum LIGHT_TYPE type);
+float CalculateBrightness(Vector3 interPosition, Vector3 interNormal);

@@ -107,17 +107,15 @@ void CameraMove(Camera* camera, POINT* preMousePos, int mouseSensi) {
 		Vector3 cameraY = Normalize(camera->up);
 		Vector3 cameraX = Normalize(Cross(cameraY, cameraZ));
 		//固定y, 移动x与z轴			* No! 这样是错的!
-		/*cameraZ = Normalize(Sub(Multi(cameraZ, cosf(offsetH)), Multi(cameraX, sinf(offsetH))));
-		cameraX = Normalize(Cross(cameraY, cameraZ));*/
 		//应当以(0,0,1)为轴转动		* 这样才对!!!
 		struct MATRIX33 rotation = {
 			{ cosf(offsetH), -sinf(offsetH), 0 },
 			{ sinf(offsetH), cosf(offsetH), 0 },
 			{ 0, 0, 1 }
 		};
-		cameraX = LinearTrans33(rotation, cameraX);
-		cameraY = LinearTrans33(rotation, cameraY);
-		cameraZ = LinearTrans33(rotation, cameraZ);
+		cameraX = Normalize(LinearTrans33(rotation, cameraX));
+		cameraY = Normalize(LinearTrans33(rotation, cameraY));
+		cameraZ = Normalize(LinearTrans33(rotation, cameraZ));
 		//固定x, 移动z与y轴
 		cameraZ = Normalize(Sub(Multi(cameraZ, cosf(offsetV)), Multi(cameraY, sinf(offsetV))));
 		cameraY = Normalize(Cross(cameraZ, cameraX));
