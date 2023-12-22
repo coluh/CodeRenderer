@@ -42,6 +42,7 @@ void PrepareScreen(int* w, int* h) {
 			for (int i = 1; i < 46; i++)printf("\n*");
 			break;
 		}
+		fflush(stdout);
 		ch = _getch();
 		switch (ch) {
 		case 'j':

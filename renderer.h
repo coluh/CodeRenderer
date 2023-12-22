@@ -11,7 +11,7 @@
 #endif
 #define HEIGHTBYWIDTH 2
 #define RENDERING_DISTANCE 10
-#define TIME_SLICE (1000/12)
+#define TIME_SLICE (1000/25)
 /*
  *  总结一下, 这些三维向量中仅表示方向的有:
  *      camera.target

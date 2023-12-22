@@ -11,6 +11,7 @@ void pr(float l) {
 	printf("%c", " `.:;-=+~>?*0CXB#$W@"[level]);
 }
 void ControlFPS(clock_t* previousTime) {
+	fflush(stdout);
 	clock_t drawTime = clock() - *previousTime;
 	clock_t waitTime = TIME_SLICE - drawTime;
 	//printf("\n\n\n\n\n\n\n\n\n\n%d", drawTime);
@@ -136,7 +137,7 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
  *			否则, 若此次射线延伸的比例更短, 更新位置和法向量
  */
 bool RayHitBlock(Ray ray, const Block* blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
-	Block* now = blockPos;
+	const Block* now = blockPos;
 	bool isFound = false;
 	float t_last = RENDERING_DISTANCE * 100.0f;
 	for (; now != NULL; now = now->next) {

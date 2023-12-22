@@ -5,6 +5,8 @@ int main(int argc, char* argv[]) {
 	clock_t previousTime;
 	previousTime = clock();
 	POINT previousMousePos = { 0 };
+	char* buffer = (char*)malloc(4096 * sizeof(char));
+	setvbuf(stdout, buffer, _IOFBF, 4096);
 	int height = 20;
 	int width = 20 * 2 * HEIGHTBYWIDTH;
 	PrepareScreen(&width, &height);
@@ -22,7 +24,7 @@ int main(int argc, char* argv[]) {
 	AddLight(1, -1, 1, LIGHT_PARALLEL);
 	AddLight(-10, -10, -5, LIGHT_PARALLEL);
 	//FILE* fp = fopen("data.blocks", "w");
-	Block stone4 = { -1, -1, 0, 0b10100000u, NULL };
+	Block stone4 = { -1, -1, 2, 0b10100000u, NULL };
 	Block stone3 = { 0, 0, 0, 0b10100000u, &stone4 };
 	Block stone2 = { 0, 0, 1, 0b10100000u, &stone3 };
 	Block stone1 = { 0, 1, 0, 0b10100000u,&stone2 };
