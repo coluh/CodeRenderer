@@ -8,11 +8,6 @@ int main(int argc, char* argv[]) {
 	int height = 20;
 	int width = 20 * 2 * HEIGHTBYWIDTH;
 	PrepareScreen(&width, &height);
-	/*printf("QWERTYUIOP");
-	getchar();
-	getchar();
-	height *= 4;
-	width *= 4;*/
 	Camera camera = {
 		{3, 1, 1},
 		{0, 0, 0},
@@ -27,7 +22,11 @@ int main(int argc, char* argv[]) {
 	AddLight(1, -1, 1, LIGHT_PARALLEL);
 	AddLight(-10, -10, -5, LIGHT_PARALLEL);
 	//FILE* fp = fopen("data.blocks", "w");
-	Block stone = { 0,0,0,0b10100000u };
+	Block stone4 = { -1, -1, 0, 0b10100000u, NULL };
+	Block stone3 = { 0, 0, 0, 0b10100000u, &stone4 };
+	Block stone2 = { 0, 0, 1, 0b10100000u, &stone3 };
+	Block stone1 = { 0, 1, 0, 0b10100000u,&stone2 };
+	Block stone = { 1, -1, 1, 0b10100000u, &stone1 };
 	while (true) {
 		printf("\x1B[1;1H");
 		printf("Pos: ( %+.1f, %+.1f, %+.1f )", camera.position.x, camera.position.y, camera.position.z);
@@ -43,9 +42,7 @@ int main(int argc, char* argv[]) {
 				Ray ray = GenRay(&camera, xRate, yRate);
 				Vector3 interPosition;	//要分清楚坐标和用坐标表示的方向啊!!
 				Vector3 interNormal;	//噫嘘唏!!	这个是方向, 不是坐标也!!
-				if (RayHitBlock(ray, stone, &interPosition, &interNormal)) {
-					/*float diff = 0.5f * reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
-					diff += 0.5f * reluf(Dot(interNormal, Normalize(moonDire)));*/
+				if (RayHitBlock(ray, &stone, &interPosition, &interNormal)) {
 					float diff = CalculateBrightness(interPosition, interNormal);
 					pr(diff);
 				}

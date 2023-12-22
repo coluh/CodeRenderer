@@ -28,7 +28,7 @@ void ControlFPS(clock_t* previousTime) {
 	}
 	*previousTime = clock();
 }
-//Vector
+//add two vectors
 Vector3 Add(Vector3 a, Vector3 b)
 {
 	Vector3 re = { a.x + b.x, a.y + b.y, a.z + b.z };
@@ -135,41 +135,44 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
  *			若x坐标或y坐标差大于0.5, continue
  *			否则, 若此次射线延伸的比例更短, 更新位置和法向量
  */
-bool RayHitBlock(Ray ray, Block blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
-	Vector3 origin = { (float)blockPos.x,(float)blockPos.y,(float)blockPos.z };
-	Ray normal[6] = { {
-		Add(origin, (Vector3) { 0, 0.5, 0.5 }), {-1, 0, 0}
-	}, {
-		Add(origin, (Vector3) { 0.5, 0, 0.5 }), {0, -1, 0}
-	}, {
-		Add(origin, (Vector3) { 0.5, 0.5, 0 }), {0, 0, -1}
-	}, {
-		Add(origin, (Vector3) { 1, 0.5, 0.5 }), {1, 0, 0}
-	}, {
-		Add(origin, (Vector3) { 0.5, 1, 0.5 }), {0, 1, 0}
-	}, {
-		Add(origin, (Vector3) { 0.5, 0.5, 1 }), {0, 0, 1}
-	} };
+bool RayHitBlock(Ray ray, const Block* blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
+	Block* now = blockPos;
 	bool isFound = false;
 	float t_last = RENDERING_DISTANCE * 100.0f;
-	for (int i = 0; i < 6; i++) {
-		//normal[i].direction
-		float t = Dot(Sub(normal[i].origin, ray.origin), normal[i].direction);
-		t /= Dot(ray.direction, normal[i].direction);
-		if (t <= 0)
-			continue;
-		Vector3 hitPos = Add(ray.origin, Multi(ray.direction, t));
-		if (normal[i].direction.x == 0 && fabsf(hitPos.x - normal[i].origin.x) >= 0.5)
-			continue;
-		if (normal[i].direction.y == 0 && fabsf(hitPos.y - normal[i].origin.y) >= 0.5)
-			continue;
-		if (normal[i].direction.z == 0 && fabsf(hitPos.z - normal[i].origin.z) >= 0.5)
-			continue;
-		if (isFound == false || (isFound == true && t < t_last)) {
-			*outHitPos = hitPos;
-			*outHitNormal = normal[i].direction;
-			isFound = true;
-			t_last = t;
+	for (; now != NULL; now = now->next) {
+		Vector3 origin = { (float)now->x,(float)now->y,(float)now->z };
+		Ray normal[6] = { {
+			Add(origin, (Vector3) { 0, 0.5, 0.5 }), {-1, 0, 0}
+		}, {
+			Add(origin, (Vector3) { 0.5, 0, 0.5 }), {0, -1, 0}
+		}, {
+			Add(origin, (Vector3) { 0.5, 0.5, 0 }), {0, 0, -1}
+		}, {
+			Add(origin, (Vector3) { 1, 0.5, 0.5 }), {1, 0, 0}
+		}, {
+			Add(origin, (Vector3) { 0.5, 1, 0.5 }), {0, 1, 0}
+		}, {
+			Add(origin, (Vector3) { 0.5, 0.5, 1 }), {0, 0, 1}
+		} };
+		for (int i = 0; i < 6; i++) {
+			//normal[i].origin 坐标为负数时渲染错误
+			float t = Dot(Sub(normal[i].origin, ray.origin), normal[i].direction);
+			t /= Dot(ray.direction, normal[i].direction);
+			if (t <= 0)
+				continue;
+			Vector3 hitPos = Add(ray.origin, Multi(ray.direction, t));
+			if (normal[i].direction.x == 0 && fabsf(hitPos.x - normal[i].origin.x) >= 0.5)
+				continue;
+			if (normal[i].direction.y == 0 && fabsf(hitPos.y - normal[i].origin.y) >= 0.5)
+				continue;
+			if (normal[i].direction.z == 0 && fabsf(hitPos.z - normal[i].origin.z) >= 0.5)
+				continue;
+			if (isFound == false || (isFound == true && t < t_last)) {
+				*outHitPos = hitPos;
+				*outHitNormal = normal[i].direction;
+				isFound = true;
+				t_last = t;
+			}
 		}
 	}
 	if (isFound == true)

@@ -56,10 +56,11 @@ typedef struct RAY {
     Vector3 direction;      //Normalized
 } Ray;
 typedef struct BLOCK {
-    UINT8 x;
-    UINT8 y;
-    UINT8 z;
+    INT8 x;
+    INT8 y;
+    INT8 z;
     UINT8 information;
+    struct BLOCK* next;
 } Block;
 void PrepareScreen(int *w, int *h);
 void ControlFPS(clock_t*);
@@ -81,7 +82,7 @@ Ray GenRay(const Camera*, float, float);
 //Camera
 void CameraMove(Camera*, POINT*, int);
 bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal);
-bool RayHitBlock(Ray ray, Block block, Vector3* outHitPos, Vector3* outHitNormal);
+bool RayHitBlock(Ray ray, const Block* block, Vector3* outHitPos, Vector3* outHitNormal);
 void AddLightV(Vector3 coo, enum LIGHT_TYPE type);
 void AddLight(float x, float y, float z, enum LIGHT_TYPE type);
 float CalculateBrightness(Vector3 interPosition, Vector3 interNormal);
