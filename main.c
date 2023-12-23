@@ -23,12 +23,15 @@ int main(int argc, char* argv[]) {
 	AddLight(70, 40, 50, LIGHT_POINT);
 	AddLight(1, -1, 1, LIGHT_PARALLEL);
 	AddLight(-10, -10, -5, LIGHT_PARALLEL);
-	//FILE* fp = fopen("data.blocks", "w");
-	Block stone4 = { -1, -1, 2, 0b10100000u, NULL };
-	Block stone3 = { 0, 0, 0, 0b10100000u, &stone4 };
-	Block stone2 = { 0, 0, 1, 0b10100000u, &stone3 };
-	Block stone1 = { 0, 1, 0, 0b10100000u,&stone2 };
-	Block stone = { 1, -1, 1, 0b10100000u, &stone1 };
+	readBlock();
+	/*AddBlock(0, 0, 0, 0);
+	AddBlock(0, 1, 0, 0);
+	AddBlock(0, 0, 1, 0);
+	AddBlock(1, -1, 1, 0);
+	AddBlock(-1, -1, 2, 0);*/
+	/*for (int i = -5; i < 5; i++)
+		for (int j = -5; j < 5; j++)
+			AddBlock(i, j, -1, 0);*/
 	while (true) {
 		printf("\x1B[1;1H");
 		printf("Pos: ( %+.1f, %+.1f, %+.1f )", camera.position.x, camera.position.y, camera.position.z);
@@ -44,7 +47,7 @@ int main(int argc, char* argv[]) {
 				Ray ray = GenRay(&camera, xRate, yRate);
 				Vector3 interPosition;	//要分清楚坐标和用坐标表示的方向啊!!
 				Vector3 interNormal;	//噫嘘唏!!	这个是方向, 不是坐标也!!
-				if (RayHitBlock(ray, &stone, &interPosition, &interNormal)) {
+				if (RayHitBlock(ray, &interPosition, &interNormal)) {
 					float diff = CalculateBrightness(interPosition, interNormal);
 					pr(diff);
 				}

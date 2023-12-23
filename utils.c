@@ -1,5 +1,6 @@
 #include "renderer.h"
 struct LIGHT* root = NULL;
+Block* baseBlock = NULL;
 float reluf(float a) {
 	if (a > 0)
 		return a;
@@ -136,8 +137,8 @@ bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPositi
  *			若x坐标或y坐标差大于0.5, continue
  *			否则, 若此次射线延伸的比例更短, 更新位置和法向量
  */
-bool RayHitBlock(Ray ray, const Block* blockPos, Vector3* outHitPos, Vector3* outHitNormal) {
-	const Block* now = blockPos;
+bool RayHitBlock(Ray ray, Vector3* outHitPos, Vector3* outHitNormal) {
+	const Block* now = baseBlock;
 	bool isFound = false;
 	float t_last = RENDERING_DISTANCE * 100.0f;
 	for (; now != NULL; now = now->next) {
@@ -220,4 +221,52 @@ float CalculateBrightness(Vector3 interPosition, Vector3 interNormal) {
 		n++;
 	}
 	return diff / n;
+}
+void AddBlockV(Vector3 coo, UINT8 infor) {
+	AddBlock((INT8)coo.x, (INT8)coo.y, (INT8)coo.z, infor);
+}
+void AddBlock(INT8 x, INT8 y, INT8 z, UINT8 infor) {
+	Block* new = (Block*)malloc(sizeof(Block));
+	if (new == NULL) {
+		printf("\nMemory used up!");
+		return;
+	}
+	new->x = x;
+	new->y = y;
+	new->z = z;
+	new->information = infor & 0b01111111u;
+	new->next = NULL;
+	if (baseBlock == NULL) {
+		baseBlock = new;
+	}
+	else {
+		Block* this = baseBlock;	//Head Node
+		for (; this->next != NULL; this = this->next);
+		this->next = new;
+	}
+}
+
+bool readBlock(){
+	FILE* fp = fopen("data.blocks", "r");
+	if (fp == NULL)
+		return false;
+	char buffer[128];
+	while (fgets(buffer, 128, fp) != NULL) {
+		char keyword[12];
+		int i = 0;
+		while (buffer[i] != ' ') {
+			keyword[i] = buffer[i];
+			i++;
+		}
+		keyword[i] = '\0';
+		if (strcmp(keyword, "block") == 0) {
+			int x, y, z;
+			unsigned int infor;
+			if (sscanf(buffer, "%*s %d %d %d %u", &x, &y, &z, &infor) < 0)
+				return false;
+			AddBlock((INT8)x, (INT8)y, (INT8)z, (UINT8)infor);
+		}
+	}
+	fclose(fp);
+	return true;
 }

@@ -1,11 +1,13 @@
 #pragma once
 #include <stdio.h>
 #include <conio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
 #include <Windows.h>
+#include <assert.h>
 #ifndef PI
     #define PI 3.14159265358979f
 #endif
@@ -82,7 +84,10 @@ Ray GenRay(const Camera*, float, float);
 //Camera
 void CameraMove(Camera*, POINT*, int);
 bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal);
-bool RayHitBlock(Ray ray, const Block* block, Vector3* outHitPos, Vector3* outHitNormal);
+bool RayHitBlock(Ray ray, Vector3* outHitPos, Vector3* outHitNormal);
 void AddLightV(Vector3 coo, enum LIGHT_TYPE type);
 void AddLight(float x, float y, float z, enum LIGHT_TYPE type);
+void AddBlockV(Vector3 coo, UINT8 infor);
+void AddBlock(INT8 x, INT8 y, INT8 z, UINT8 infor);
+bool readBlock();
 float CalculateBrightness(Vector3 interPosition, Vector3 interNormal);
