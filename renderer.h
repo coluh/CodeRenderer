@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <assert.h>
 #ifndef PI
-    #define PI 3.14159265358979f
+#define PI 3.14159265358979f
 #endif
 #define HEIGHTBYWIDTH 2
 #define RENDERING_DISTANCE 10
@@ -28,46 +28,47 @@ typedef struct VECTOR3 {
 	float z;
 } Vector3;
 struct MATRIX33 {
-    Vector3 col_one;
-    Vector3 col_two;
-    Vector3 col_three;
+	Vector3 col_one;
+	Vector3 col_two;
+	Vector3 col_three;
 };
 enum LIGHT_TYPE {
-    LIGHT_POINT, LIGHT_PARALLEL
+	LIGHT_POINT, LIGHT_PARALLEL
 };
 struct LIGHT {
-    Vector3 coordinate;
-    enum LIGHT_TYPE type;
-    struct LIGHT* next;
+	Vector3 coordinate;
+	enum LIGHT_TYPE type;
+	struct LIGHT* next;
 };
 typedef Vector3 Vector;
 enum CAMERA_MODE {
-    FIRST_PERSON, THIRD_PERSON
+	FIRST_PERSON, THIRD_PERSON
 };
 typedef struct CAMERA {
-    Vector3 position;       //相机位置
-    Vector3 target;         //目标位置
-    Vector3 up;             //相机的上方向
-    float fovy;             //视场角
-    float aspect;           //相机视口宽高比
-    float zNear;            //相机到裁剪平面的距离
-    enum CAMERA_MODE mode;
+	Vector3 position;       //相机位置
+	Vector3 target;         //目标位置
+	Vector3 up;             //相机的上方向
+	float fovy;             //视场角
+	float aspect;           //相机视口宽高比
+	float zNear;            //相机到裁剪平面的距离
+	enum CAMERA_MODE mode;
 } Camera;
 typedef struct RAY {
-    Vector3 origin;
-    Vector3 direction;      //Normalized
+	Vector3 origin;
+	Vector3 direction;      //Normalized
 } Ray;
 typedef struct BLOCK {
-    INT8 x;
-    INT8 y;
-    INT8 z;
-    UINT8 information;
-    struct BLOCK* next;
+	INT8 x;
+	INT8 y;
+	INT8 z;
+	UINT8 information;
+	struct BLOCK* next;
 } Block;
-void PrepareScreen(int *w, int *h);
+void PrepareScreen(int* w, int* h);
 void ControlFPS(clock_t*);
 //make negitive value to zero
-float reluf(float a);
+float Reluf(float a);
+INT32 Gauss(float a);
 //get a float between 0 and 1 and print char
 void pr(float l);
 //Vector
@@ -83,6 +84,7 @@ Vector3 LinearTrans33(struct MATRIX33 trans, Vector3 before);
 Ray GenRay(const Camera*, float, float);
 //Camera
 void CameraMove(Camera*, POINT*, int);
+void BlockChange(Camera* camera, short* preState);
 bool RayHitBall(Ray ray, Vector3 ballCenter, float radius, Vector3* outHitPosition, Vector3* outHitNormal);
 bool RayHitBlock(Ray ray, Vector3* outHitPos, Vector3* outHitNormal);
 void AddLightV(Vector3 coo, enum LIGHT_TYPE type);

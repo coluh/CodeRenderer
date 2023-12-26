@@ -131,3 +131,24 @@ void CameraMove(Camera* camera, POINT* preMousePos, int mouseSensi) {
 		preMousePos->y = 0;
 	}
 }
+void BlockChange(Camera* camera, short* preState) {
+	if (GetKeyState(VK_RBUTTON) >= 0 || *preState < 0) {
+		*preState = GetKeyState(VK_RBUTTON);
+		return;
+	}
+	*preState = GetKeyState(VK_RBUTTON);
+	Ray ray = GenRay(camera, 0.5, 0.5);
+	Vector3 interPosition;
+	Vector3 interNormal;
+	//else :
+	if (RayHitBlock(ray, &interPosition, &interNormal)) {
+		INT8 x, y, z;
+		x = interNormal.x == 0 ? (INT8)Gauss(interPosition.x) : (INT8)interPosition.x;
+		y = interNormal.y == 0 ? (INT8)Gauss(interPosition.y) : (INT8)interPosition.y;
+		z = interNormal.z == 0 ? (INT8)Gauss(interPosition.z) : (INT8)interPosition.z;
+		if (interNormal.x < 0)x -= 1;
+		if (interNormal.y < 0)y -= 1;
+		if (interNormal.z < 0)z -= 1;
+		AddBlock(x, y, z, 0);
+	}
+}

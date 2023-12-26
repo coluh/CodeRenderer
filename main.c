@@ -2,9 +2,11 @@
 
 int main(int argc, char* argv[]) {
 	printf("\033[?25l");	//hide curser
+	ShowCursor(false);
 	clock_t previousTime;
 	previousTime = clock();
 	POINT previousMousePos = { 0 };
+	short previousButtonState = -1;
 	char* buffer = (char*)malloc(4096 * sizeof(char));
 	setvbuf(stdout, buffer, _IOFBF, 4096);
 	int height = 20;
@@ -42,6 +44,10 @@ int main(int argc, char* argv[]) {
 		// Block stone
 		for (int row = 0; row < height; ++row) {
 			for (int col = 0; col < width; ++col) {
+				if (row == height / 2 && col == width / 2) {
+					printf("\x1B[1;37;40m+\x1B[1;32;40m");
+					continue;
+				}
 				float xRate = col / (float)width;
 				float yRate = row / (float)height;
 				Ray ray = GenRay(&camera, xRate, yRate);
@@ -58,6 +64,7 @@ int main(int argc, char* argv[]) {
 			printf("\n");
 		}
 		CameraMove(&camera, &previousMousePos, 400);
+		BlockChange(&camera, &previousButtonState);
 		ControlFPS(&previousTime);
 	}
 	//fclose(fp);

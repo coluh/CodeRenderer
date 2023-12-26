@@ -1,11 +1,16 @@
 #include "renderer.h"
 struct LIGHT* root = NULL;
 Block* baseBlock = NULL;
-float reluf(float a) {
+float Reluf(float a) {
 	if (a > 0)
 		return a;
 	else
 		return 0;
+}
+INT32 Gauss(float a) {
+	INT32 b = (INT32)a;
+	if (b > a)b--;
+	return b;
 }
 void pr(float l) {
 	int level = (int)(l * 20);
@@ -207,17 +212,17 @@ void AddLight(float x, float y, float z, enum LIGHT_TYPE type) {
 }
 float CalculateBrightness(Vector3 interPosition, Vector3 interNormal) {
 
-	/*float diff = 0.5f * reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
-	diff += 0.5f * reluf(Dot(interNormal, Normalize(moonDire)));*/
+	/*float diff = 0.5f * Reluf(Dot(interNormal, Normalize(Sub(sunPos, interPosition))));
+	diff += 0.5f * Reluf(Dot(interNormal, Normalize(moonDire)));*/
 	if (root == NULL)
 		return 0;
 	struct LIGHT* now = root;
 	float diff = 0, n = 0;
 	for (; now != NULL; now = now->next) {
 		if (now->type == LIGHT_POINT)
-			diff += reluf(Dot(interNormal, Normalize(Sub(now->coordinate, interPosition))));
+			diff += Reluf(Dot(interNormal, Normalize(Sub(now->coordinate, interPosition))));
 		else
-			diff += reluf(Dot(interNormal, Normalize(now->coordinate)));
+			diff += Reluf(Dot(interNormal, Normalize(now->coordinate)));
 		n++;
 	}
 	return diff / n;
