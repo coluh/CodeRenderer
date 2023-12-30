@@ -91,5 +91,8 @@ void AddLightV(Vector3 coo, enum LIGHT_TYPE type);
 void AddLight(float x, float y, float z, enum LIGHT_TYPE type);
 void AddBlockV(Vector3 coo, UINT8 infor);
 void AddBlock(INT8 x, INT8 y, INT8 z, UINT8 infor);
+void DeleteBlockV(Vector3 coo);
+void DeleteBlock(INT8 x, INT8 y, INT8 z);
 bool readBlock();
 float CalculateBrightness(Vector3 interPosition, Vector3 interNormal);
+Vector3 InBlock(Vector3 position);

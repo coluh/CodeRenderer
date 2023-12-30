@@ -131,24 +131,28 @@ void CameraMove(Camera* camera, POINT* preMousePos, int mouseSensi) {
 		preMousePos->y = 0;
 	}
 }
+// 0 for LeftButton, 1 for RightButton
 void BlockChange(Camera* camera, short* preState) {
-	if (GetKeyState(VK_RBUTTON) >= 0 || *preState < 0) {
-		*preState = GetKeyState(VK_RBUTTON);
-		return;
-	}
-	*preState = GetKeyState(VK_RBUTTON);
 	Ray ray = GenRay(camera, 0.5, 0.5);
 	Vector3 interPosition;
 	Vector3 interNormal;
-	//else :
-	if (RayHitBlock(ray, &interPosition, &interNormal)) {
+	if (!RayHitBlock(ray, &interPosition, &interNormal))return;
+	if (GetKeyState(VK_LBUTTON) < 0 && preState[0] >= 0) {
+		Vector3 blockPlace = InBlock(Add(interPosition, Multi(interNormal, -0.5)));
 		INT8 x, y, z;
-		x = interNormal.x == 0 ? (INT8)Gauss(interPosition.x) : (INT8)interPosition.x;
-		y = interNormal.y == 0 ? (INT8)Gauss(interPosition.y) : (INT8)interPosition.y;
-		z = interNormal.z == 0 ? (INT8)Gauss(interPosition.z) : (INT8)interPosition.z;
-		if (interNormal.x < 0)x -= 1;
-		if (interNormal.y < 0)y -= 1;
-		if (interNormal.z < 0)z -= 1;
+		x = (INT8)blockPlace.x;
+		y = (INT8)blockPlace.y;
+		z = (INT8)blockPlace.z;
+		DeleteBlock(x, y, z);
+	}
+	if (GetKeyState(VK_RBUTTON) < 0 && preState[1] >= 0) {
+		Vector3 blockPlace = InBlock(Add(interPosition, Multi(interNormal, 0.5)));
+		INT8 x, y, z;
+		x = (INT8)blockPlace.x;
+		y = (INT8)blockPlace.y;
+		z = (INT8)blockPlace.z;
 		AddBlock(x, y, z, 0);
 	}
+	preState[0] = GetKeyState(VK_LBUTTON);
+	preState[1] = GetKeyState(VK_RBUTTON);
 }

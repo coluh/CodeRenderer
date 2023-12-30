@@ -227,6 +227,23 @@ float CalculateBrightness(Vector3 interPosition, Vector3 interNormal) {
 	}
 	return diff / n;
 }
+Vector3 InBlock(Vector3 position) {
+	/*x = interNormal.x == 0 ? (INT8)Gauss(interPosition.x) : (INT8)interPosition.x;
+	y = interNormal.y == 0 ? (INT8)Gauss(interPosition.y) : (INT8)interPosition.y;
+	z = interNormal.z == 0 ? (INT8)Gauss(interPosition.z) : (INT8)interPosition.z;*/
+	/*if (interNormal.x < 0)x -= 1;
+	if (interNormal.y < 0)y -= 1;
+	if (interNormal.z < 0)z -= 1;*/
+	INT8 x, y, z;
+	x = (INT8)Gauss(position.x);
+	y = (INT8)Gauss(position.y);
+	z = (INT8)Gauss(position.z);
+	Vector3 block;
+	block.x = x;
+	block.y = y;
+	block.z = z;
+	return block;
+}
 void AddBlockV(Vector3 coo, UINT8 infor) {
 	AddBlock((INT8)coo.x, (INT8)coo.y, (INT8)coo.z, infor);
 }
@@ -250,8 +267,26 @@ void AddBlock(INT8 x, INT8 y, INT8 z, UINT8 infor) {
 		this->next = new;
 	}
 }
-
-bool readBlock(){
+void DeleteBlockV(Vector3 blockPos) {
+	DeleteBlock((INT8)blockPos.x, (INT8)blockPos.y, (INT8)blockPos.z);
+}
+void DeleteBlock(INT8 x, INT8 y, INT8 z) {
+	if (baseBlock == NULL)return;
+	Block* p = NULL;
+	Block* prev = NULL;
+	for (p = baseBlock; p != NULL; p = p->next) {
+		if (p->x == x && p->y == y && p->z == z) {
+			if (prev != NULL)
+				prev->next = p->next;
+			else
+				baseBlock = NULL;
+			free(p);
+			return;
+		}
+		prev = p;
+	}
+}
+bool readBlock() {
 	FILE* fp = fopen("data.blocks", "r");
 	if (fp == NULL)
 		return false;
