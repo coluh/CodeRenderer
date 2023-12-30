@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	int width = 20 * 2 * HEIGHTBYWIDTH;
 	PrepareScreen(&width, &height);
 	Camera camera = {
-		{3, 1, 1},
+		{2, 1, 2},
 		{0, 0, 0},
 		{0, 0, 1},
 		PI / 2.0f,
@@ -25,15 +25,10 @@ int main(int argc, char* argv[]) {
 	AddLight(70, 40, 50, LIGHT_POINT);
 	AddLight(1, -1, 1, LIGHT_PARALLEL);
 	AddLight(-10, -10, -5, LIGHT_PARALLEL);
-	readBlock();
-	/*AddBlock(0, 0, 0, 0);
-	AddBlock(0, 1, 0, 0);
-	AddBlock(0, 0, 1, 0);
-	AddBlock(1, -1, 1, 0);
-	AddBlock(-1, -1, 2, 0);*/
-	/*for (int i = -5; i < 5; i++)
-		for (int j = -5; j < 5; j++)
-			AddBlock(i, j, -1, 0);*/
+	if (!ReadBlock()) {
+		BuildBaseBlock();
+		camera.position = Add(camera.position, (Vector3) { 3, -1, 3 });
+	}
 	while (true) {
 		printf("\x1B[1;1H");
 		printf("Pos: ( %+.1f, %+.1f, %+.1f )", camera.position.x, camera.position.y, camera.position.z);

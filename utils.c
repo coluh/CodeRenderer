@@ -286,7 +286,7 @@ void DeleteBlock(INT8 x, INT8 y, INT8 z) {
 		prev = p;
 	}
 }
-bool readBlock() {
+bool ReadBlock() {
 	FILE* fp = fopen("data.blocks", "r");
 	if (fp == NULL)
 		return false;
@@ -309,4 +309,21 @@ bool readBlock() {
 	}
 	fclose(fp);
 	return true;
+}
+
+void BuildBaseBlock() {
+	AddBlock(3, 0, 0, 0);
+	AddBlock(2, 1, 1, 0);
+	AddBlock(2, -1, 1, 0);
+	AddBlock(2, 2, 1, 0);
+	AddBlock(2, -2, 1, 0);
+	AddBlock(1, 3, 2, 0);
+	AddBlock(1, -3, 2, 0);
+	AddBlock(0, 3, 3, 0);
+	AddBlock(0, -3, 3, 0);
+	AddBlock(-1, 2, 4, 0);
+	AddBlock(-1, -2, 4, 0);
+	AddBlock(-1, 1, 4, 0);
+	AddBlock(-1, -1, 4, 0);
+	AddBlock(0, 0, 3, 0);
 }
